@@ -1,0 +1,21 @@
+# Sanity check: remove the nanoring, retaining the background geometry.
+# The suspended-air case should have R ~ 0, T ~ 1, A ~ 0.
+# The bare-SiO2 case at 0 deg should approach Fresnel's R ~ 0.03374.
+
+case_index = 1;            # Set to 2 to check the bare air/SiO2 interface.
+theta_deg = 0;
+record_nearfields = 0;
+settings_nanorings;
+if (case_index == 1) {
+    case_name = "A_air";
+} else {
+    case_name = "B_SiO2";
+}
+output_base = output_prefix+"_reference_"+case_name+"_"+
+              num2str(theta_deg)+"deg";
+build_nanorings;
+select("Au_nanoring");
+delete;
+save(output_base+".fsp");
+run;
+analyze_nanorings;

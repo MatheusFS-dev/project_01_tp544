@@ -1,0 +1,18 @@
+# Edit ONLY this parameter section to choose a single simulation.
+# 1 = air suspended, 2 = SiO2 substrate.
+case_index = 1;
+theta_deg = 0;
+record_nearfields = (theta_deg == 0) | (theta_deg == 45);
+
+# Execute in FDTD Solutions, with this folder as the working directory.
+settings_nanorings;
+if (case_index == 1) {
+    case_name = "A_air";
+} else {
+    case_name = "B_SiO2";
+}
+output_base = output_prefix+"_"+case_name+"_"+num2str(theta_deg)+"deg";
+build_nanorings;
+save(output_base+".fsp");
+run;
+analyze_nanorings;

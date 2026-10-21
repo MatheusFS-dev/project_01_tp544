@@ -1,0 +1,149 @@
+# Build one complete 3D FDTD model.
+# Requires settings_nanorings.lsf to have been executed.
+# Caller sets case_index (1: suspended in air, 2: SiO2) and theta_deg.
+# Caller sets record_nearfields (0 or 1).
+
+# Destructive: replace all objects in the current root model.
+switchtolayout;
+groupscope("::model");
+deleteall;
+
+# One 320 x 320 nm periodic cell is equivalent to an infinite square array.
+addfdtd;
+set("name","FDTD");
+set("dimension",2);
+set("background index",1);
+set("x",0);
+set("x span",period_x);
+set("y",0);
+set("y span",period_y);
+set("z min",fdtd_z_min);
+set("z max",fdtd_z_max);
+set("mesh accuracy",mesh_accuracy);
+set("simulation time",simulation_duration);
+set("auto shutoff min",auto_shutoff);
+set("z min bc","PML");
+set("z max bc","PML");
+set("pml profile",3);
+set("pml layers",pml_layers);
+
+# At normal incidence, ordinary periodic x/y BCs are valid.
+# At oblique incidence BFAST internally replaces transverse BCs.
+set("x min bc","Periodic");
+set("y min bc","Periodic");
+
+# A semi-infinite substrate approximation crosses the lower PML and
+# has no lower interface inside the simulated volume.
+if (case_index == 2) {
+    addrect;
+    set("name","SiO2_halfspace");
+    set("material","<Object defined dielectric>");
+    set("index",substrate_index);
+    set("x",0);
+    set("x span",period_x);
+    set("y",0);
+    set("y span",period_y);
+    set("z min",substrate_z_min);
+    set("z max",0);
+}
+
+# A ring primitive avoids ambiguity from overlapping metal/air cylinders.
+# z=0 is the lower surface of gold, z=h is its upper surface.
+addring;
+set("name","Au_nanoring");
+set("material",gold_material);
+set("inner radius",inner_radius);
+set("outer radius",outer_radius);
+set("theta start",0);
+set("theta stop",360);
+set("x",0);
+set("y",0);
+set("z min",0);
+set("z max",ring_height);
+
+# Resolve the metal edges and local field hotspots more finely than the
+# rest of the simulation region. The mesh region includes the interface.
+addmesh;
+set("name","mesh_near_Au");
+set("x",0);
+set("x span",period_x);
+set("y",0);
+set("y span",period_y);
+set("z min",-20e-9);
+set("z max",ring_height+25e-9);
+set("override x mesh",1);
+set("override y mesh",1);
+set("override z mesh",1);
+set("dx",local_mesh_step);
+set("dy",local_mesh_step);
+set("dz",local_mesh_step);
+
+# TM/p polarization corresponds to polarization angle 0 degrees.
+# phi=0 makes xz the incidence plane. Backward sends light toward -z.
+setglobalsource("wavelength start",min_wavelength);
+setglobalsource("wavelength stop",max_wavelength);
+addplane;
+set("name","TM_incident");
+set("injection axis","z-axis");
+set("direction","Backward");
+set("angle theta",theta_deg);
+set("angle phi",0);
+set("polarization angle",0);
+set("amplitude",1);
+set("x",0);
+set("x span",period_x);
+set("y",0);
+set("y span",period_y);
+set("z",source_height);
+if (theta_deg == 0) {
+    set("plane wave type","Bloch/periodic");
+} else {
+    set("plane wave type","BFAST");
+}
+
+# Monitors inherit a common, uniformly-spaced wavelength grid.
+setglobalmonitor("use wavelength spacing",1);
+setglobalmonitor("frequency points",frequency_points);
+
+# Reflection is measured ABOVE the source, where there is no incident field.
+# For downward incidence, reflected power travels along +z and is positive.
+adddftmonitor;
+set("name","R_monitor");
+set("monitor type",7);
+set("x",0);
+set("x span",period_x);
+set("y",0);
+set("y span",period_y);
+set("z",reflection_height);
+
+# Transmission is measured below the ring and below the air/SiO2 interface.
+# Downward flux is negative in Lumerical's +z monitor convention.
+adddftmonitor;
+set("name","T_monitor");
+set("monitor type",7);
+set("x",0);
+set("x span",period_x);
+set("y",0);
+set("y span",period_y);
+set("z",transmission_height);
+
+# Only 0 and 45 degrees require xy and xz field maps.
+if (record_nearfields == 1) {
+    adddftmonitor;
+    set("name","NF_XY");
+    set("monitor type",7);
+    set("x",0);
+    set("x span",period_x);
+    set("y",0);
+    set("y span",period_y);
+    set("z",xy_field_height);
+
+    adddftmonitor;
+    set("name","NF_XZ");
+    set("monitor type",6);
+    set("x",0);
+    set("x span",period_x);
+    set("y",0);
+    set("z min",xz_field_z_min);
+    set("z max",xz_field_z_max);
+}

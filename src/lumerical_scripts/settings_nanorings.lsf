@@ -1,0 +1,42 @@
+# Tarefa 3: gold nanoring metasurface.
+# All dimensional Lumerical inputs use SI units unless explicitly named *_nm.
+# Values under ASSIGNMENT are fixed by the problem statement.
+
+# ASSIGNMENT: physical geometry.
+outer_radius = 90e-9;
+inner_radius = 50e-9;
+ring_height = 30e-9;
+period_x = 320e-9;
+period_y = 320e-9;
+
+# ASSIGNMENT: optical material, illumination, and spectral sampling interval.
+gold_material = "Au (Gold) - Palik";
+substrate_index = 1.45;
+angles_deg = [0,15,30,45,60,75];
+min_wavelength = 450e-9;
+max_wavelength = 1600e-9;
+
+# NUMERICAL STARTING VALUES: check convergence before reporting final results.
+frequency_points = 401;
+local_mesh_step = 4e-9;
+mesh_accuracy = 2;
+simulation_duration = 2500e-15;
+auto_shutoff = 1e-6;
+pml_layers = 16;
+
+# Geometric clearances in air and substrate. These are not dimensions of the device.
+fdtd_z_min = -900e-9;
+fdtd_z_max = 850e-9;
+source_height = 300e-9;
+reflection_height = 520e-9;
+transmission_height = -500e-9;
+substrate_z_min = -2e-6;
+
+# Sampling planes for near-field maps.
+xy_field_height = ring_height + 5e-9;
+xz_field_z_min = -160e-9;
+xz_field_z_max = 180e-9;
+
+# Output settings. All files are written into Lumerical's working directory.
+output_prefix = "nanoring";
+export_plots = 1;
