@@ -1,0 +1,27 @@
+# Shared illumination. Caller sets theta_deg and center_wavelength_nm.
+# center_wavelength_nm=0 selects the broadband 450-1600 nm sweep.
+if (center_wavelength_nm == 0) {
+    setglobalsource("wavelength start",min_wavelength);
+    setglobalsource("wavelength stop",max_wavelength);
+} else {
+    setglobalsource("wavelength start",(center_wavelength_nm-1)*1e-9);
+    setglobalsource("wavelength stop",(center_wavelength_nm+1)*1e-9);
+}
+addplane;
+set("name","TM_incident");
+set("injection axis","z-axis");
+set("direction","Backward");
+set("angle theta",theta_deg);
+set("angle phi",0);
+set("polarization angle",0);
+set("amplitude",1);
+set("x",0);
+set("x span",period_x);
+set("y",0);
+set("y span",period_y);
+set("z",source_height);
+if (theta_deg == 0) {
+    set("plane wave type","Bloch/periodic");
+} else {
+    set("plane wave type","BFAST");
+}

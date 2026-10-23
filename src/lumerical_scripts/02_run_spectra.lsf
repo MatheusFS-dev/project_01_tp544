@@ -1,0 +1,29 @@
+# Execute after 01_build_geometry. Each completion marker is written last.
+settings_nanorings;
+for (case_index=1:2) {
+    if (case_index == 1) { case_name = "A_air"; }
+    else { case_name = "B_SiO2"; }
+    for (angle_index=1:length(angles_deg)) {
+        theta_deg = angles_deg(angle_index);
+        output_base = "../../results/spectra/"+case_name+"_"+num2str(theta_deg)+"deg";
+        if (!fileexists(output_base+".done")) {
+            load("../../results/geometry/"+case_name+".fsp");
+            switchtolayout;
+            center_wavelength_nm = 0;
+            configure_excitation;
+            configure_power_monitors;
+            run;
+            wavelength_nm = c/getdata("T_monitor","f")*1e9;
+            T = -transmission("T_monitor");
+            R = transmission("R_monitor");
+            A = 1-R-T;
+            spectrum = [wavelength_nm,T,R,A];
+            save(output_base+".fsp");
+            write(output_base+".tsv","wavelength_nm\tT\tR\tA","overwrite");
+            write(output_base+".tsv",num2str(spectrum,"%.12g"));
+            matlabsave(output_base,wavelength_nm,T,R,A);
+            write(output_base+".done","complete","overwrite");
+            ?"Completed "+output_base;
+        }
+    }
+}

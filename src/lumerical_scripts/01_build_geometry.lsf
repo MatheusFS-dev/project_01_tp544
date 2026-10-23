@@ -1,0 +1,11 @@
+# Execute from this script directory in FDTD Solutions.
+settings_nanorings;
+for (case_index=1:2) {
+    build_nanorings;
+    if (case_index == 1) {
+        base_name = "../../results/geometry/A_air";
+    } else {
+        base_name = "../../results/geometry/B_SiO2";
+    }
+    save(base_name+".fsp");
+}
