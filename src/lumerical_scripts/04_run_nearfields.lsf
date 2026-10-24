@@ -1,4 +1,5 @@
 # Requests are numeric TSV rows prepared by 03_review_resonances.py.
+simulation_profile = "final";
 settings_nanorings;
 requests = readdata("../../results/resonances/nearfield_requests.tsv");
 for (request_number=1:size(requests,1)) {
@@ -33,7 +34,8 @@ for (request_number=1:size(requests,1)) {
         set("y",0);
         set("z min",xz_field_z_min);
         set("z max",xz_field_z_max);
-        run;
+        save(output_base+".fsp");
+        run("FDTD","GPU");
         field_xy = getresult("NF_XY","E");
         field_xz = getresult("NF_XZ","E");
         x_nm = field_xy.x*1e9;
@@ -42,7 +44,6 @@ for (request_number=1:size(requests,1)) {
         E2_xy = pinch(pinch(field_xy.E2,4,1),3,1);
         E2_xz = pinch(pinch(field_xz.E2,4,1),2,1);
         sampled_wavelength_nm = c/field_xy.f(1)*1e9;
-        save(output_base+".fsp");
         matlabsave(output_base,x_nm,y_nm,z_nm,E2_xy,E2_xz,requested_wavelength_nm,sampled_wavelength_nm);
         write(output_base+".done","complete","overwrite");
     }

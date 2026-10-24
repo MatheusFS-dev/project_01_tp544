@@ -9,9 +9,8 @@ deleteall;
 
 # One 320 x 320 nm periodic cell is equivalent to an infinite square array.
 addfdtd;
-set("name","FDTD");
-set("dimension",3);
-set("background index",1);
+set("dimension","3D");
+set("index",1);
 set("x",0);
 set("x span",period_x);
 set("y",0);
@@ -26,8 +25,8 @@ set("z max bc","PML");
 set("pml profile",3);
 set("pml layers",pml_layers);
 
-# At normal incidence, ordinary periodic x/y BCs are valid.
-# At oblique incidence BFAST internally replaces transverse BCs.
+# At normal incidence, ordinary periodic x/y BCs are valid. The source setup
+# changes x to Bloch for oblique incidence, using its angle-defined phase.
 set("x min bc","Periodic");
 set("y min bc","Periodic");
 
@@ -65,11 +64,11 @@ set("z max",ring_height);
 addmesh;
 set("name","mesh_near_Au");
 set("x",0);
-set("x span",period_x);
+set("x span",mesh_x_span);
 set("y",0);
-set("y span",period_y);
-set("z min",-200e-9);
-set("z max",200e-9);
+set("y span",mesh_y_span);
+set("z min",mesh_z_min);
+set("z max",mesh_z_max);
 set("override x mesh",1);
 set("override y mesh",1);
 set("override z mesh",1);
@@ -78,4 +77,3 @@ set("dy",local_mesh_step);
 set("dz",local_mesh_step);
 
 # Sources and monitors are added by the spectral or near-field stage.
-

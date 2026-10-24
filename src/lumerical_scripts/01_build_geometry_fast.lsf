@@ -1,0 +1,4 @@
+# Exploratory geometry: 6 nm local mesh and a reduced z domain.
+simulation_profile = "fast";
+build_geometry_driver;
+simulation_profile = "final";

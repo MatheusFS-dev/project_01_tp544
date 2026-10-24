@@ -1,0 +1,4 @@
+# Exploratory spectra: 231 spectral samples and results prefixed with fast_.
+simulation_profile = "fast";
+run_spectra_driver;
+simulation_profile = "final";

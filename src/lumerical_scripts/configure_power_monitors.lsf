@@ -1,5 +1,17 @@
 setglobalmonitor("use wavelength spacing",1);
 setglobalmonitor("frequency points",frequency_points);
+groupscope("::model");
+
+# Make this helper safe to execute repeatedly on a loaded project.
+if (getnamednumber("R_monitor") > 0) {
+    select("R_monitor");
+    delete;
+}
+if (getnamednumber("T_monitor") > 0) {
+    select("T_monitor");
+    delete;
+}
+
 adddftmonitor;
 set("name","R_monitor");
 set("monitor type",7);

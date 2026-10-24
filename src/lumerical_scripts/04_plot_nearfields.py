@@ -17,9 +17,23 @@ review_spec.loader.exec_module(review)
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def _load_mat_arrays(path):
+    """Read legacy MAT files and MATLAB v7.3/HDF5 files from Lumerical."""
+    try:
+        return loadmat(path)
+    except NotImplementedError:
+        import h5py
+
+        with h5py.File(path, "r") as stream:
+            # MATLAB v7.3 stores arrays in column-major order. h5py exposes
+            # their dimensions reversed, so transpose them back to MATLAB order.
+            return {key: np.asarray(stream[key]).T for key in stream
+                    if isinstance(stream[key], h5py.Dataset)}
+
+
 def read_fields(path):
-    """Load and validate one Lumerical legacy MAT field export."""
-    data = loadmat(path)
+    """Load and validate one Lumerical MAT field export."""
+    data = _load_mat_arrays(path)
     arrays = {}
     for key in ("x_nm", "y_nm", "z_nm", "E2_xy", "E2_xz"):
         arrays[key] = np.asarray(data[key], dtype=float).squeeze()

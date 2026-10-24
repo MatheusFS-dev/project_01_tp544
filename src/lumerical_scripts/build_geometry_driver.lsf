@@ -1,0 +1,11 @@
+# Build geometry for the active numerical profile.
+settings_nanorings;
+for (case_index=1:2) {
+    build_nanorings;
+    if (case_index == 1) {
+        base_name = "../../results/geometry/"+output_tag+"A_air";
+    } else {
+        base_name = "../../results/geometry/"+output_tag+"B_SiO2";
+    }
+    save(base_name+".fsp");
+}

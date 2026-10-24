@@ -2,6 +2,16 @@
 # All dimensional Lumerical inputs use SI units unless explicitly named *_nm.
 # Values under ASSIGNMENT are fixed by the problem statement.
 
+# Make paths in the driver scripts independent of the IDE's startup directory.
+script_directory = filedirectory(currentscriptname);
+cd(script_directory);
+
+# Numerical profile. The normal numbered scripts use the final profile unless
+# a wrapper has selected fast for an exploratory sweep.
+if (exist("simulation_profile") != 1) {
+    simulation_profile = "final";
+}
+
 # ASSIGNMENT: physical geometry.
 outer_radius = 90e-9;
 inner_radius = 50e-9;
@@ -16,17 +26,44 @@ angles_deg = [0,15,30,45,60,75];
 min_wavelength = 450e-9;
 max_wavelength = 1600e-9;
 
-# NUMERICAL STARTING VALUES: check convergence before reporting final results.
-frequency_points = 1151;
-local_mesh_step = 4e-9;
+# NUMERICAL VALUES. Use 01_build_geometry_fast and 02_run_spectra_fast for
+# exploratory spectra; use the normal scripts for report-quality results.
+if (simulation_profile == "fast") {
+    output_tag = "fast_";
+    frequency_points = 231;
+    local_mesh_step = 6e-9;
+    fdtd_z_min = -1200e-9;
+    fdtd_z_max = 1200e-9;
+    mesh_x_span = period_x;
+    mesh_y_span = period_y;
+    mesh_z_min = -200e-9;
+    mesh_z_max = 200e-9;
+    simulation_duration = 2500e-15;
+    auto_shutoff = 1e-6;
+    pml_layers = 16;
+} else {
+    simulation_profile = "final";
+    output_tag = "";
+    frequency_points = 1151;
+    # 3 nm gives 13 cells across the 40 nm ring width and 10 cells through
+    # its 30 nm thickness. Restrict this fine mesh to the ring vicinity.
+    local_mesh_step = 3e-9;
+    mesh_x_span = 220e-9;
+    mesh_y_span = 220e-9;
+    mesh_z_min = -30e-9;
+    mesh_z_max = 60e-9;
+    # 280/300 nm separates the upper/lower monitors from the corresponding
+    # PML, while keeping the substrate continuous into the lower PML.
+    fdtd_z_min = -800e-9;
+    fdtd_z_max = 800e-9;
+    # The run ends earlier only when residual field energy drops below 1e-6.
+    simulation_duration = 10000e-15;
+    auto_shutoff = 1e-6;
+    pml_layers = 16;
+}
 mesh_accuracy = 2;
-simulation_duration = 2500e-15;
-auto_shutoff = 1e-6;
-pml_layers = 16;
 
 # Geometric clearances in air and substrate. These are not dimensions of the device.
-fdtd_z_min = -2000e-9;
-fdtd_z_max = 2000e-9;
 source_height = 300e-9;
 reflection_height = 520e-9;
 transmission_height = -500e-9;
