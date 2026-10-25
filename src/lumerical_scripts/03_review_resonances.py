@@ -112,8 +112,12 @@ def plot_spectrum(data, selections, stem, title):
     for index, (label, color) in enumerate((("T", "#405e78"), ("R", "#a16c54"), ("A", "#667c61")), 1):
         ax.plot(data[:, 0], data[:, index], label=label, color=color, lw=1.25)
     for _, _, identifier, wavelength in selections:
+        point_index = int(np.argmin(np.abs(data[:, 0] - wavelength)))
+        reflection = data[point_index, 2]
         ax.axvline(wavelength, color="#777777", lw=.7, ls="--")
-        ax.annotate(identifier, (wavelength, 1), rotation=90, va="top", fontsize=8)
+        ax.scatter(wavelength, reflection, s=34, marker="o", color="#222222",
+                   edgecolors="white", linewidths=.6, zorder=4,
+                   label=f"{identifier}: {wavelength} nm")
     ax.set(xlabel="Comprimento de onda (nm)", ylabel="Fração de potência", title=title, xlim=(450, 1600))
     ax.legend(frameon=False, ncol=3)
     save_figure(fig, stem)

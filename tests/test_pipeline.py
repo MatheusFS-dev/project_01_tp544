@@ -69,6 +69,22 @@ def test_spectrum_selection_and_outputs(tmp_path):
     assert lines == ["request_id\tcase_index\tangle_deg\twavelength_nm", "1\t1\t0\t800", "2\t1\t45\t850"]
 
 
+def test_spectrum_plot_marks_resonance_with_exact_nm_in_legend(monkeypatch):
+    """A selected resonance is a plotted point with an exact-nm legend label."""
+    review = load_script("03_review_resonances")
+    captured = {}
+
+    def capture(fig, _stem):
+        captured["figure"] = fig
+
+    monkeypatch.setattr(review, "save_figure", capture)
+    data = np.array([[799., .2, .3, .5], [800., .1, .8, .1], [801., .2, .4, .4]])
+    review.plot_spectrum(data, [("A_air", 0, "M1", 800)], Path("synthetic"), "synthetic")
+    axis = captured["figure"].axes[0]
+    assert "M1: 800 nm" in [text.get_text() for text in axis.get_legend().get_texts()]
+    assert any(np.array_equal(collection.get_offsets(), [[800., .8]]) for collection in axis.collections)
+
+
 def test_fast_spectrum_selection_and_outputs(tmp_path):
     """Fast 5 nm spectra use isolated review and near-field artifacts."""
     assert (SCRIPTS / "03_review_fast_resonances.py").exists()
