@@ -1,0 +1,7 @@
+{
+  "conversion": "epsilon_r=(n+i*k)^2 from lambda_angstrom,n,k rows",
+  "retrieved_utc": "2026-10-26T11:19:09.299796+00:00",
+  "samples": 310,
+  "source_sha256": "0e8cd88a5a61c7a19abb0ab94f7c7e3dba85085a80daf49a53a7587070197099",
+  "source_url": "https://raw.githubusercontent.com/ulfgri/nk/master/windt/Au_palik.nk"
+}

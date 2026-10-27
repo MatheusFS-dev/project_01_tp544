@@ -1,0 +1,7 @@
+# Independent environment for HFSS 2025.2 automation.
+pyaedt==1.5.0
+numpy
+scipy
+matplotlib
+h5py
+pytest

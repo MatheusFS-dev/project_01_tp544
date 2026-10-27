@@ -1,0 +1,5 @@
+request_id,case,angle_deg,resonance_id,wavelength_nm
+1,A_air,0,M1,772
+2,B_SiO2,0,M1,905
+3,A_air,45,M1,784
+4,B_SiO2,45,M1,970

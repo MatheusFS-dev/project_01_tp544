@@ -1,0 +1,14 @@
+# Export the exact Lumerical database samples used by the existing FSP models.
+# Run this script in FDTD Solutions with src/hfss_scripts as working directory.
+
+material_name = "Au (Gold) - Palik";
+sampled_data = getmaterial(material_name,"sampled data");
+frequency_hz = pinch(sampled_data,2,1);
+epsilon = pinch(sampled_data,2,2);
+
+export_table = [frequency_hz,real(epsilon),imag(epsilon)];
+output_file = "../../results/hfss/Au_Palik_sampled_data.tsv";
+write(output_file,"frequency_hz\tepsilon_real\tepsilon_imag","overwrite");
+write(output_file,num2str(export_table,"%.16g"));
+
+?"Exported "+material_name+" sampled data to "+output_file;

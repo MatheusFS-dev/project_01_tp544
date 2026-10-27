@@ -2,3 +2,8 @@
 docs/superpowers/specs/
 docs/superpowers/plans/
 results/
+
+# Python bytecode and run logs
+__pycache__/
+*.py[cod]
+*.log

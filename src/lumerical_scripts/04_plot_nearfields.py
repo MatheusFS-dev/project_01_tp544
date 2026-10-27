@@ -21,9 +21,11 @@ def _load_mat_arrays(path):
     """Read legacy MAT files and MATLAB v7.3/HDF5 files from Lumerical."""
     try:
         return loadmat(path)
-    except NotImplementedError:
+    except (NotImplementedError, ValueError):
         import h5py
 
+        if not h5py.is_hdf5(path):
+            raise
         with h5py.File(path, "r") as stream:
             # MATLAB v7.3 stores arrays in column-major order. h5py exposes
             # their dimensions reversed, so transpose them back to MATLAB order.

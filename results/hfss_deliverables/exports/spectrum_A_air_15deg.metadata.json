@@ -1,0 +1,7 @@
+{
+  "floquet_modes_per_port": 10,
+  "native_samples": 401,
+  "power_definition": "sum(|S|^2) over modes with real(Gamma)=0",
+  "report_samples": 1151,
+  "source_mode": "TopFloquet:2"
+}
