@@ -74,6 +74,9 @@
         \item $\lambda_r=#3$ nm, $\theta=#4^\circ$.
         \item #5
         \item #6
+        \ifnum#2=1\relax
+        \item FDTD: o monitor aplica Fourier ao campo temporal em cada ponto; o mapa mostra a intensidade na frequência escolhida.
+        \fi
       \end{itemize}
     \end{column}
     \begin{column}{0.34\textwidth}
@@ -134,7 +137,7 @@
     \begin{itemize}\setlength\itemsep{0.48em}
       \item Fonte de onda plana de 450 a 1600 nm, com 1151 pontos: resolução espectral de 1 nm.
       \item Incidência no plano $xz$: $\theta=0,15,30,45,60,75^\circ$, medido a partir da normal $z$.
-      \item Polarização TM/p: $\mathbf{E}$ no plano $xz$ e $\mathbf{H}\parallel y$; em $0^\circ$, $\mathbf{E}\parallel x$.
+      \item TM/p: $\mathbf{H}\parallel y$, perpendicular ao plano de incidência $xz$; $\mathbf{E}$ fica nesse plano. Em $0^\circ$, $\mathbf{E}\parallel x$.
       \item Monitores registram a potência transmitida e refletida, normalizada pela potência incidente.
       \item Em $0^\circ$ usam-se laterais periódicas; nos ângulos oblíquos, Bloch em $x$ e periódica em $y$.
     \end{itemize}
@@ -178,7 +181,7 @@
     \small
     \begin{itemize}\setlength\itemsep{0.48em}
       \item Ouro dispersivo: \textbf{Au (Gold) - Palik}; SiO$_2$ com $n=1{,}45$.
-      \item Domínio FDTD: $z=-800$ a $+800$ nm; PML com 16 camadas e perfil para ângulos rasantes.
+      \item Domínio FDTD: $z=-800$ a $+800$ nm. PML com \textbf{16 camadas}, perfil \emph{steep angle}, para melhorar a absorção de ondas próximas da incidência rasante e reduzir reflexões artificiais.
       \item Fonte em $z=+300$ nm; reflexão em $+520$ nm; transmissão em $-500$ nm.
       \item Malha local: $3$ nm em $x,y,z$, dentro de $220\times220\times90$ nm ao redor do anel.
     \end{itemize}
@@ -186,8 +189,8 @@
   \begin{column}{0.49\textwidth}
     \small
     \begin{itemize}\setlength\itemsep{0.48em}
-      \item Fora da caixa fina: malha automática não uniforme, \emph{mesh accuracy} 2.
-      \item Tempo físico máximo: 10 ps; auto-shutoff desejado: $10^{-6}$.
+      \item Fora da caixa fina: malha automática não uniforme, \emph{mesh accuracy} 2, definida antes da simulação pela geometria, materiais e precisão escolhida.
+      \item Tempo máximo: 10 ps. Auto-shutoff: encerra quando a energia remanescente cai a $10^{-6}$ da referência.
       \item Meta de custo: 30 min por caso $\Rightarrow$ 12 espectros $\approx 6$ h.
       \item Tempo real acumulado nos logs: \alert{$\approx 9{,}64$ h}; alguns casos passaram de 60 min.
       \item Malha mais fina, domínio maior e maior tempo físico tornariam a campanha ainda mais cara.
@@ -233,7 +236,8 @@
   \begin{column}{0.42\textwidth}
     \small
     \begin{itemize}\setlength\itemsep{0.55em}
-      \item A ressonância M1 é marcada pela linha tracejada no máximo de $R$ e mínimo de $T$.
+      \item \textbf{Ressonância plasmônica}: oscilação coletiva dos elétrons livres do metal, excitada pela luz, com resposta intensa em uma frequência característica e concentração de campo perto do anel.
+      \item M1 é marcada pela linha tracejada no máximo de $R$ e mínimo de $T$.
       \item Em uma solução física passiva, espera-se $0\le T,R,A\le1$ e $T+R+A=1$.
       \item Valores negativos ou maiores que 1 não representam ganho nem absorção real: são sinais de erro numérico.
       \item Assim, a posição de uma feição suave pode ser discutida; picos estreitos e violações fortes exigem cautela.
@@ -326,12 +330,12 @@
 
 \fieldslide{Campo próximo: ar, $45^\circ$}{3}{784}{45}
 {O padrão XY ainda é quase simétrico e muito semelhante ao de $0^\circ$, com hotspots nas faces laterais.}
-{O corte XZ preserva a localização nos cantos do metal; a componente longitudinal da polarização pode introduzir assimetria discreta.}
+{Em $45^\circ$, a onda chega com fases diferentes ao longo de $x$, e o campo elétrico tem componentes em $x$ e $z$. Essa iluminação pode produzir intensidades diferentes nos dois lados do anel.}
 {O mapa sustenta a associação do marcador de 784 nm ao mesmo caráter dipolar, mas não valida as regiões divergentes do espectro.}
 
 \fieldslide{SiO$_2$: campo próximo em $45^\circ$}{4}{970}{45}
 {O plano XY torna-se assimétrico: o lado de $x<0$ concentra mais intensidade que o lado oposto.}
-{O corte XZ também mostra maior localização em uma extremidade, coerente com incidência oblíqua e ambiente assimétrico.}
+{Em $45^\circ$, a onda tem fases diferentes ao longo de $x$ e campo elétrico também em $z$, podendo intensificar um lado do anel. A interface ar/sílica também altera a distribuição vertical do campo.}
 {Há localização de campo na estrutura, porém a forte instabilidade do espectro impede tratar 970 nm como valor convergido.}
 
 \begin{frame}{Conclusões}
@@ -364,8 +368,9 @@
     \small
     \begin{itemize}\setlength\itemsep{0.5em}
       \item Mesma geometria, casos em ar e SiO$_2$, ângulos e polarização TM/p.
-      \item HFSS Driven Modal, com condições periódicas e portas de Floquet em $z=\pm800$ nm.
-      \item Excitação TM$_{00}$ na porta superior. SiO$_2$ com $n=1{,}45$.
+      \item Driven Modal: solução em frequência, com excitação e resposta descritas por modos de porta.
+      \item Portas de Floquet em $z=\pm800$ nm: representam ondas incidentes e espalhadas da rede periódica.
+      \item TM$_{00}$ na porta superior: $\mathbf{H}$ perpendicular ao plano de incidência e $\mathbf{E}$ nesse plano; $(0,0)$ é a ordem fundamental de Floquet. SiO$_2$: $n=1{,}45$.
       \item Ouro dispersivo: dados Palik importados no HFSS.
     \end{itemize}
   \end{column}
@@ -373,7 +378,7 @@
     \small
     \begin{itemize}\setlength\itemsep{0.5em}
       \item Comprimento máximo local no Au: 3 nm. Dez modos por porta no ar e 14 com SiO$_2$.
-      \item Adaptação em 374,74 THz: até 20 passes, $\Delta S$ máximo de 0,005 e dois passes convergidos exigidos.
+      \item Adaptação em 374,74 THz: até 20 refinamentos de malha; $\Delta S$ (variação dos parâmetros de espalhamento) $\leq0{,}005$ em dois passes consecutivos.
       \item Varredura interpolada: 187,37--666,21 THz, 401 amostras nativas. Resultados reamostrados a cada 1 nm.
       \item $T$ e $R$ somam a potência dos modos propagantes. $A=1-T-R$.
     \end{itemize}
@@ -415,6 +420,12 @@
       \begin{itemize}
         \item Candidato #4: $\lambda=#5$ nm, $\theta=#2^\circ$.
         \item Mapas mostram $|E|^2/|E_0|^2$, com referência sem anel.
+        \ifnum#2=0\relax
+        \item HFSS: calcula o campo diretamente na frequência; o mapa dispensa a transformada temporal de Fourier.
+        \fi
+        \ifnum#2=45\relax
+        \item Em $45^\circ$, a onda tem fases diferentes ao longo de $x$ e campo elétrico também em $z$. Isso pode produzir intensidades diferentes nos dois lados do anel.
+        \fi
       \end{itemize}
     \end{column}
   \end{columns}
