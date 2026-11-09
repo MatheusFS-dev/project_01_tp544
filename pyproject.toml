@@ -1,0 +1,16 @@
+[project]
+name = "tp544-hfss"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "pyaedt==1.5.0",
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "h5py",
+    "pytest",
+    "tqdm",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
